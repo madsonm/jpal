@@ -4,7 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 @Component({
   selector: 'app-transactions',
   templateUrl: './transactions.component.html',
-  styleUrls: ['./transactions.component.sass']
+  styleUrls: ['./transactions.component.scss']
 })
 export class TransactionsComponent implements OnInit {
 
