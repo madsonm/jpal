@@ -13,7 +13,6 @@ import { MatSort } from '@angular/material/sort';
 export class TransactionsComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  columns = ['id', 'date', 'name', 'reason', 'amount', 'resolved'];
 
   @ViewChild('templateEdit', { static: true }) templateEdit: TemplateRef<any>;
   dialogRef: MatDialogRef<any>;
@@ -39,9 +38,9 @@ export class TransactionsComponent implements OnInit {
 
     config.data = this.formBuilder.group({
       id: [null],
-      name: [null, Validators.required],
-      reason: [null, Validators.required],
-      amount: [null, Validators.required],
+      name: [null, [Validators.required]],
+      reason: [null, [Validators.required]],
+      amount: [null, [Validators.required]],
       date: [null],
       resolved: [null]
     });

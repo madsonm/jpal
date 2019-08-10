@@ -16,6 +16,8 @@ import { MatInputModule } from '@angular/material/input';
 import { WebStorageModule } from 'ngx-store';
 import { MatSortModule } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+
 
 @NgModule({
   declarations: [
@@ -36,7 +38,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatInputModule,
     WebStorageModule,
     MatSortModule,
-    MatIconModule
+    MatIconModule,
+    MatMenuModule
   ],
   providers: [],
   bootstrap: [AppComponent]
