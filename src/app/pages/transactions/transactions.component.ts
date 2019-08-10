@@ -1,5 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { FormBuilder, Validators } from '@angular/forms';
+import { TransactionsService } from './transactions.service';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-transactions',
@@ -7,21 +11,48 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./transactions.component.scss']
 })
 export class TransactionsComponent implements OnInit {
-
   dataSource: MatTableDataSource<any>;
-  columns = ['id', 'name', 'reason', 'amount', 'resolved'];
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  columns = ['id', 'date', 'name', 'reason', 'amount', 'resolved'];
 
-  constructor() {
+  @ViewChild('templateEdit', { static: true }) templateEdit: TemplateRef<any>;
+  dialogRef: MatDialogRef<any>;
 
-    this.dataSource = new MatTableDataSource([
-      {id: 0, date: '2019-06-30T11:00:00Z', amount: '3', name: 'Mike', reason: 'Theft', resolved: true}
-      , {id: 1, date: '2019-06-30T11:05:00Z', amount: '30', name: 'Alex', reason: 'Dick', resolved: false}
-      , {id: 2, date: '2019-06-30T10:00:00Z', amount: '15', name: 'Rich', reason: 'Door fee', resolved: false}
-      , {id: 3, date: '2019-06-30T13:00:00Z', amount: '-3', name: 'Mike', reason: 'Theft', resolved: true}
-   ]);
-  }
+  constructor(
+    private service: TransactionsService,
+    private dialog: MatDialog,
+    private formBuilder: FormBuilder
+  ) { }
 
   ngOnInit() {
+    this.dataSource = new MatTableDataSource([]);
+    this.dataSource.sort = this.sort;
+
+    this.service.getTransactions().subscribe(response => {
+      this.dataSource.data = response;
+    });
   }
 
+
+  addTransaction() {
+    const config = new MatDialogConfig();
+
+    config.data = this.formBuilder.group({
+      id: [null],
+      name: [null, Validators.required],
+      reason: [null, Validators.required],
+      amount: [null, Validators.required],
+      date: [null],
+      resolved: [null]
+    });
+
+    this.dialogRef = this.dialog.open(this.templateEdit, config);
+  }
+
+  submit(data) {
+    this.service.saveTransaction(data.value).subscribe(response => {
+      this.dataSource.data = response;
+      this.dialogRef.close();
+    });
+  }
 }
