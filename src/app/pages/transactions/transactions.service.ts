@@ -6,22 +6,34 @@ import { of } from 'rxjs';
   providedIn: 'root'
 })
 export class TransactionsService {
-
-  constructor(
-    private local: LocalStorageService
-  ) { }
+  constructor(private local: LocalStorageService) {}
 
   getTransactions() {
     return of(this.local.get('transactions') || []);
   }
+  resolveTransaction(transaction) {
+    transaction.resolved = true;
+    this.saveTransaction(transaction);
 
+    const resolved = { ...transaction };
+    delete resolved.id;
+    resolved.amount = resolved.amount * -1;
+
+    return this.saveTransaction(resolved);
+  }
 
   saveTransaction(transaction) {
     transaction.date = new Date().toISOString();
 
-    const transactions = this.local.get('transactions') || [];
+    let transactions = this.local.get('transactions') || [];
 
-    transaction.id = this.getId(transactions);
+    if (transaction.id) {
+      transactions = transactions.filter(
+        rec => rec && rec.id !== transaction.id
+      );
+    } else {
+      transaction.id = this.getId(transactions);
+    }
 
     transactions.push(transaction);
     this.local.set('transactions', transactions);
@@ -30,9 +42,11 @@ export class TransactionsService {
   }
 
   private getId(list: any[]): number {
-    return (list
-      .filter(rec => rec && rec.id)
-      .map(rec => rec.id)
-      .sort((a, b) => (a < b) ? 1 : -1)[0] || 0) + 1;
+    return (
+      (list
+        .filter(rec => rec && rec.id)
+        .map(rec => rec.id)
+        .sort((a, b) => (a < b ? 1 : -1))[0] || 0) + 1
+    );
   }
 }

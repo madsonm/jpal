@@ -50,7 +50,7 @@
       </button>
 
       <mat-menu #menu="matMenu">
-        <button mat-menu-item>Resolve</button>
+        <button mat-menu-item (click)="resolveTransaction(row)">Resolve</button>
         <button mat-menu-item>Copy</button>
         <button mat-menu-item>Delete</button>
       </mat-menu>
