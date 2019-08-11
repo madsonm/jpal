@@ -6,14 +6,13 @@ import { of, Observable } from "rxjs";
   providedIn: "root"
 })
 export class TransactionsService {
-  constructor(private local: LocalStorageService) {}
+  constructor(private local: LocalStorageService) { }
 
   getTransactions() {
     return of(this.local.get("transactions") || []);
   }
 
   resolveTransaction(transaction: any): Observable<any[]> {
-    console.log(transaction.resolved);
     if (transaction.resolved) {
       return this.getTransactions();
     }
@@ -24,7 +23,7 @@ export class TransactionsService {
     const resolved = { ...transaction };
     delete resolved.id;
     resolved.amount = resolved.amount * -1;
-    return this.saveTransaction(resolved); 
+    return this.saveTransaction(resolved);
   }
 
   saveTransaction(transaction) {
