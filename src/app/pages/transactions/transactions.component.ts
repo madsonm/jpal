@@ -48,7 +48,7 @@ export class TransactionsComponent implements OnInit {
     this.dialogRef = this.dialog.open(this.templateEdit, config);
   }
   
-  resolveTransation(transaction) {
+  resolveTransaction(transaction) {
     this.service.saveTransaction(transaction).subscribe(response => {
       this.dataSource.data = response;
     });

@@ -1,31 +1,36 @@
-import { Injectable } from '@angular/core';
-import { LocalStorageService } from 'ngx-store';
-import { of } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { LocalStorageService } from "ngx-store";
+import { of, Observable } from "rxjs";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class TransactionsService {
   constructor(private local: LocalStorageService) {}
 
   getTransactions() {
-    return of(this.local.get('transactions') || []);
+    return of(this.local.get("transactions") || []);
   }
-  resolveTransaction(transaction) {
+
+  resolveTransaction(transaction: any): Observable<any[]> {
+    console.log(transaction.resolved);
+    if (transaction.resolved) {
+      return this.getTransactions();
+    }
+
     transaction.resolved = true;
     this.saveTransaction(transaction);
 
     const resolved = { ...transaction };
     delete resolved.id;
     resolved.amount = resolved.amount * -1;
-
-    return this.saveTransaction(resolved);
+    return this.saveTransaction(resolved); 
   }
 
   saveTransaction(transaction) {
     transaction.date = new Date().toISOString();
 
-    let transactions = this.local.get('transactions') || [];
+    let transactions = this.local.get("transactions") || [];
 
     if (transaction.id) {
       transactions = transactions.filter(
@@ -36,7 +41,7 @@ export class TransactionsService {
     }
 
     transactions.push(transaction);
-    this.local.set('transactions', transactions);
+    this.local.set("transactions", transactions);
 
     return of(transactions);
   }
