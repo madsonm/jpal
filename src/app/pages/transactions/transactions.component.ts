@@ -17,6 +17,8 @@ export class TransactionsComponent implements OnInit {
   @ViewChild('templateEdit', { static: true }) templateEdit: TemplateRef<any>;
   dialogRef: MatDialogRef<any>;
 
+  @ViewChild('templateEditMultiple', {static: true}) templateEditMultiple: TemplateRef<any>;
+
   constructor(
     private service: TransactionsService,
     private dialog: MatDialog,
@@ -34,18 +36,48 @@ export class TransactionsComponent implements OnInit {
 
 
   addTransaction() {
+    this.modalTransaction({});
+  }
+
+  copyTransaction(transaction) {
+    delete transaction.id;
+    delete transaction.resolved;
+
+    this.modalTransaction(transaction);
+  }
+
+  editTransaction(transaction) {
+    this.modalTransaction(transaction);
+  }
+
+  modalTransaction(transaction) {
+    const config = new MatDialogConfig();
+
+    config.data = this.formBuilder.group({
+      id: [transaction.id],
+      name: [transaction.name, [Validators.required]],
+      reason: [transaction.reason, [Validators.required]],
+      amount: [transaction.amount, [Validators.required]],
+      date: [null],
+      resolved: [transaction.resolved]
+    });
+
+    this.dialogRef = this.dialog.open(this.templateEdit, config);
+  }
+
+  addMultipleTransaction() {
     const config = new MatDialogConfig();
 
     config.data = this.formBuilder.group({
       id: [null],
-      name: [null, [Validators.required]],
+      name: [[], [Validators.required]],
       reason: [null, [Validators.required]],
       amount: [null, [Validators.required]],
       date: [null],
       resolved: [null]
     });
 
-    this.dialogRef = this.dialog.open(this.templateEdit, config);
+    this.dialogRef = this.dialog.open(this.templateEditMultiple, config);
   }
 
   resolveTransaction(transaction) {
@@ -53,6 +85,17 @@ export class TransactionsComponent implements OnInit {
       this.dataSource.data = response;
     });
   }
+
+  deleteTransaction(transaction) {
+    this.service.deleteTransaction(transaction).subscribe(response => {
+      this.dataSource.data = response;
+    });
+  }
+
+
+
+  // Create a save multiple submit
+
 
   submit(data) {
     this.service.saveTransaction(data.value).subscribe(response => {

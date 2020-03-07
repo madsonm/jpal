@@ -17,12 +17,16 @@ import { WebStorageModule } from 'ngx-store';
 import { MatSortModule } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSelectModule } from '@angular/material/select';
+
+import { SelectPeopleComponent } from './components/select-people/select-people.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    TransactionsComponent
+    TransactionsComponent,
+    SelectPeopleComponent
   ],
   imports: [
     BrowserModule,
@@ -39,7 +43,8 @@ import { MatMenuModule } from '@angular/material/menu';
     WebStorageModule,
     MatSortModule,
     MatIconModule,
-    MatMenuModule
+    MatMenuModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

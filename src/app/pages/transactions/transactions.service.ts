@@ -1,15 +1,15 @@
-import { Injectable } from "@angular/core";
-import { LocalStorageService } from "ngx-store";
-import { of, Observable } from "rxjs";
+import { Injectable } from '@angular/core';
+import { LocalStorageService } from 'ngx-store';
+import { of, Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class TransactionsService {
   constructor(private local: LocalStorageService) { }
 
   getTransactions() {
-    return of(this.local.get("transactions") || []);
+    return of(this.local.get('transactions') || []);
   }
 
   resolveTransaction(transaction: any): Observable<any[]> {
@@ -29,22 +29,50 @@ export class TransactionsService {
   saveTransaction(transaction) {
     transaction.date = new Date().toISOString();
 
-    let transactions = this.local.get("transactions") || [];
+    let transactions = this.local.get('transactions') || [];
 
     if (transaction.id) {
+      // filter is filtering the array 
       transactions = transactions.filter(
+        // && if it is false, fail out (left to right)
+        // lambda
         rec => rec && rec.id !== transaction.id
       );
     } else {
       transaction.id = this.getId(transactions);
     }
-
+    // save to local storage 
+    // push adds at the end of the array
     transactions.push(transaction);
-    this.local.set("transactions", transactions);
+    this.local.set('transactions', transactions);
 
     return of(transactions);
   }
 
+  deleteTransaction(transaction) {
+
+    let transactions = this.local.get('transactions') || [];
+
+    if (transaction.id) {
+      transactions = transactions.filter(
+        rec => rec && rec.id !== transaction.id
+      );
+    }
+
+    this.local.set('transactions', transactions);
+
+    return of(transactions);
+  }
+
+
+
+// TODO - Create a save multiple service
+
+
+
+
+
+  // This gets the next available ID
   private getId(list: any[]): number {
     return (
       (list

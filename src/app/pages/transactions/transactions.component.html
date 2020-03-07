@@ -40,9 +40,14 @@
 
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef class="right">
-      <button mat-icon-button color="accent" (click)="addTransaction()">
+      <button mat-icon-button color="accent" [matMenuTriggerFor]="menu">
         <mat-icon>add_circle</mat-icon>
       </button>
+
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="addTransaction()">Add</button>
+        <button mat-menu-item (click)="addMultipleTransaction()">Add Multiple</button>
+      </mat-menu>
     </th>
     <td mat-cell *matCellDef="let row" class="right">
       <button mat-icon-button [matMenuTriggerFor]="menu">
@@ -51,8 +56,9 @@
 
       <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="resolveTransaction(row)" [disabled]="row.resolved">Resolve</button>
-        <button mat-menu-item>Copy</button>
-        <button mat-menu-item>Delete</button>
+        <button mat-menu-item (click)="copyTransaction(row)">Copy</button>
+        <button mat-menu-item (click)="deleteTransaction(row)">Delete</button>
+        <button mat-menu-item (click)="editTransaction(row)">Edit</button>
       </mat-menu>
     </td>
   </ng-container>
@@ -88,7 +94,31 @@
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>Cancel</button>
-      <button mat-button mat-dialog-submit [disabled]="data.invalid">Save</button>
+      <button mat-button mat-dialog-submit [disabled]="data.invalid || data.pristine">Save</button>
+    </mat-dialog-actions>
+  </form>
+</ng-template>
+
+
+<ng-template #templateEditMultiple let-data>
+  <form [formGroup]="data" (ngSubmit)="submit(data)">
+    <h1 mat-dialog-title>Multiple Transaction Editor</h1>
+    <mat-dialog-content>
+        <app-select-people [control]="data.get('name')"></app-select-people>
+      <mat-form-field>
+        <mat-label>Reason:</mat-label>
+        <input matInput type="text" formControlName="reason" />
+        <mat-error *ngIf="data.controls.reason.getError('required')">Reason is required!</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Amount:</mat-label>
+        <input matInput type="number" formControlName="amount" />
+        <mat-error *ngIf="data.controls.amount.getError('required')">Amount is required!</mat-error>
+      </mat-form-field>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Cancel</button>
+      <button mat-button mat-dialog-submit [disabled]="data.invalid || data.pristine">Save</button>
     </mat-dialog-actions>
   </form>
 </ng-template>
